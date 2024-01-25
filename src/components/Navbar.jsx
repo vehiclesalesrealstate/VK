@@ -28,7 +28,7 @@ const Navbar = () => {
     };
 
     const menuItems = [
-        { text: 'Home', link: 'https://vehiclesalesrealstate.github.io/VK/' },
+        { text: 'Home', link: '/' },
         { text: 'Products', link: '/products' },
         { text: 'About', link: '/about' },
         { text: 'Succursal', link: '/succursal' },
@@ -83,7 +83,7 @@ const Navbar = () => {
 
                     {!isMobile && (
                         <div sx={{ display: 'flex' }} style={{fontWeight:'600'}}>
-                            <Button component={Link} to="/VK" color="inherit">
+                            <Button component={Link} to="/" color="inherit">
                                 Home
                             </Button>
                             <Button component={Link} to="/products" color="inherit">
