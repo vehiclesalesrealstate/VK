@@ -28,7 +28,7 @@ const Navbar = () => {
     };
 
     const menuItems = [
-        { text: 'Home', link: '/VK' },
+        { text: 'Home', link: 'https://vehiclesalesrealstate.github.io/VK/' },
         { text: 'Products', link: '/products' },
         { text: 'About', link: '/about' },
         { text: 'Succursal', link: '/succursal' },
