@@ -47,7 +47,6 @@ const Home = ({ producto }) => {
           alignContent: "center",
           textAlign: "center",
           alignItems: "center",
-
           transition: "background-image 2s ease-in-out",
         }}
       >
@@ -74,8 +73,8 @@ const Home = ({ producto }) => {
               }}>"RUEDA CON PASIÓN, VIAJA CON CONFIANZA: TU DESTINO, NUESTRA GARANTÍA."</h1>
             </Grid>
           </Grid>
-          <Cards3D />
         </Paper >
+        <Cards3D />
       </div>
     </>
   );
@@ -83,7 +82,6 @@ const Home = ({ producto }) => {
 
 const styles = {
   portImgCont: {
-
     backgroundPosition: "center",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
@@ -122,7 +120,6 @@ const styles = {
   textField: {
     width: "100%",
     maxWidth: "250px",
-
     marginBottom: "10px",
   },
   cardContainer: {
@@ -136,7 +133,6 @@ const styles = {
     display: "inline-block",
     color: "wheat",
     padding: "20px",
-
   },
 };
 

@@ -7,7 +7,7 @@ import {
     uploadBytesResumable,
     getDownloadURL,
 } from "firebase/storage";
-import { getDatabase, ref as dbRef, push, set } from "firebase/database";
+import { getDatabase, ref as dbRef, set } from "firebase/database";
 import {
     Button,
     Select,
@@ -75,7 +75,7 @@ const Upload = () => {
                             database,
                             `Users/Products/imges/motos_img/Daytona/${selectedFolder}/${folderName}`
                         );
-                        const newImageRef = push(productRef);
+                        //const newImageRef = push(productRef);
 
                         await set(productRef, {
                             name,

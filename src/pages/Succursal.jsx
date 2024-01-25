@@ -45,7 +45,7 @@ const ScatterCard = styled(Card)`
 
 export default function Succursal() {
     const [expanded, setExpanded] = React.useState(false);
-    const [location, setLocation] = React.useState(null);
+    const [location] = React.useState(null);
 
     const [buttonColor, setButtonColor] = React.useState(
         { share: 'inherit' });

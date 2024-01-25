@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
-import Button from "@mui/material/Button";
 import {
     Card,
     Grid,
     Select,
     MenuItem,
+    Typography,
     InputLabel,
     FormControl,
 } from "@mui/material";
@@ -37,7 +37,7 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         alignContent: "center",
-        textAlign: "center",
+
     },
 };
 
@@ -53,13 +53,25 @@ const Cards = ({ producto }) => {
                 <CardMedia
                     component="img"
                     alt={`imageUrl`}
-                    height="140"
+                    height="200"
                     image={imageUrl}
                     loading="lazy"
                 />
                 <CardContent>
-                    <h2>{"$" + precio}</h2>
-                    <p>{description}</p>
+                    <Typography variant="body2" color="text.secondary">
+                        {description}
+                    </Typography>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Typography color="text.secondary">Precio: ${precio}</Typography>
+                    </div>
                 </CardContent>
             </Card>
         </Grid>
@@ -121,14 +133,7 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
         } finally {
             setLoading(false);
         }
-
     };
-    const handleSearchClick = () => {
-        const filteredProducts = productos.filter((producto) => {
-            return true;
-        });
-        setProductos(filteredProducts);
-    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -205,20 +210,6 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={12} style={styles.rowContainer}>
-                    <Button
-                        variant="contained"
-                        style={{
-                            marginLeft: "10px",
-                            ...styles.button,
-                            background: "#fff",
-                            color: "#000",
-                        }}
-                        onClick={handleSearchClick}
-                    >
-                        Search
-                    </Button>
-                </Grid>
             </Grid>
             <Grid
                 container
@@ -237,13 +228,9 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
                         xs={12}
                         style={{ ...styles.rowContainer, ...styles.cardContainer }}
                     >
-
                         {productos.map((producto) => (
-
                             <Cards key={producto.id} producto={producto} />
-
                         ))}
-
                     </Grid>
                 </Box>
             </Grid>
