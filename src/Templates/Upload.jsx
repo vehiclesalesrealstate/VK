@@ -22,6 +22,8 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MuiAlert from "@mui/material/Alert";
+// eslint-disable-next-line no-unused-vars
+import { storage } from '../firebase/database';
 
 const Upload = () => {
     const [selectedFolder, setSelectedFolder] = useState("CC150");
