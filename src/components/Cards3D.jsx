@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/joy/Box";
-import Card from "@mui/joy/Card";
+import Button from "@mui/material/Button";
+import {
+    Card,
+    Grid,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+} from "@mui/material";
+
+import "firebase/storage";
 import CardContent from "@mui/joy/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import Grid from "@mui/material/Grid";
-import { getDatabase, ref, onValue } from "firebase/database";
+
+import axios from "axios";
 
 const styles = {
+
     container: {
         padding: "10px",
         display: "grid",
@@ -30,50 +41,185 @@ const styles = {
     },
 };
 
-export default function CardLayers3d({
-    searchTerm,
-    imageUrls: propImageUrls,
-}) {
-    const [imageUrls, setImageUrls] = useState([]);
-    const [products, setProducts] = useState([]);
-
-
-    useEffect(() => {
-        const db = getDatabase();
-        const productsRef = ref(
-            db,
-            `Users/Products/imges/motos_img/Daytona/${searchTerm}`
-        );
-        onValue(productsRef, (snapshot) => {
-            const data = snapshot.val();
-            // Convierte el objeto de datos en un arreglo de productos
-            if (data) {
-                const productsArray = Object.keys(data).map((key) => ({
-                    id: key,
-                    name: data[key].name,
-                    description: data[key].description,
-                    precio: data[key].precio,
-                    imageUrls: data[key].imageUrls,
-                }));
-                setProducts(productsArray);
-                setImageUrls(propImageUrls);
-            }
-        });
-
-    }, [propImageUrls, searchTerm]);
+const Cards = ({ producto }) => {
+    const { description, imageUrl, name, precio } = producto;
 
     return (
-        <div
-            style={{
-                height: "auto",
-                justifyContent: "center",
-                alignContent: "center",
-                textAlign: "center",
-                alignItems: "center",
-                display: "flex",
-                transition: "background-image 2s ease-in-out",
-            }}
-        >
+        <Grid item padding="5px">
+            <Card style={{ maxWidth: 345 }}>
+                <CardContent>
+                    <h3>{name}</h3>
+                </CardContent>
+                <CardMedia
+                    component="img"
+                    alt={`imageUrl`}
+                    height="140"
+                    image={imageUrl}
+                    loading="lazy"
+                />
+                <CardContent>
+                    <h2>{"$" + precio}</h2>
+                    <p>{description}</p>
+                </CardContent>
+            </Card>
+        </Grid>
+    );
+};
+export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
+    const [productos, setProductos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [selectedBrand, setSelectedBrand] = React.useState("Daytona");
+    const [selectedCilinder, setSelectedCilinder] = React.useState("CC150");
+
+    const handleBrandChange = async (event) => {
+        const brand = event.target.value;
+        setSelectedBrand(brand);
+        try {
+            const response = await axios.get(
+                `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/${brand}.json`
+            );
+            const data = response.data;
+            const carpetas = Object.keys(data);
+            const fetchPromises = carpetas.map(async (carpeta) => {
+                const response = await axios.get(
+                    `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/${brand}/${carpeta}.json`
+                );
+                const productosData = response.data;
+                const productosArray = Object.values(productosData);
+                const productosConFolder = productosArray.map((producto) => ({
+                    ...producto,
+                    folder: carpeta,
+                }));
+                return productosConFolder;
+            });
+            const productosData = await Promise.all(fetchPromises);
+            const allProductos = productosData.flat();
+            setProductos(allProductos);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCilinderChange = async (event) => {
+        const cilinder = event.target.value;
+        setSelectedCilinder(cilinder);
+        const url = `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/${selectedBrand}/${cilinder}.json`;
+
+        try {
+            const response = await axios.get(url);
+            const productosData = Object.values(response.data);
+            const productosConFolder = productosData.map((producto) => ({
+                ...producto,
+                folder: cilinder,
+            }));
+            setProductos(productosConFolder);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
+
+    };
+    const handleSearchClick = () => {
+        const filteredProducts = productos.filter((producto) => {
+            return true;
+        });
+        setProductos(filteredProducts);
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(
+                    `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/Daytona.json`
+                );
+                const data = response.data;
+                const carpetas = Object.keys(data);
+                const fetchPromises = carpetas.map(async (carpeta) => {
+                    const response = await axios.get(
+                        `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/Daytona/${carpeta}.json`
+                    );
+                    const productosData = response.data;
+                    const productosArray = Object.values(productosData);
+                    const productosConFolder = productosArray.map((producto) => ({
+                        ...producto,
+                        folder: carpeta,
+                    }));
+                    return productosConFolder;
+                });
+                const productosData = await Promise.all(fetchPromises);
+                const allProductos = productosData.flat();
+                setProductos(allProductos);
+            } catch (error) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [propImageUrls, searchTerm]);
+    if (loading) {
+        return <p>Cargando datos...</p>;
+    }
+    if (error) {
+        return <p>Error al cargar los datos: {error.message}</p>;
+    }
+
+    return (
+        <>
+            <Grid
+                container
+                className="container_port"
+                spacing={2}
+                style={{ marginTop: "20px" }}
+            >
+                <Grid item xs={12} style={styles.rowContainer}>
+                    <FormControl style={{ marginRight: "10px", background: "#fff" }}>
+                        <InputLabel id="brand-label">Brand</InputLabel>
+                        <Select
+                            labelId="brand-label"
+                            id="brand"
+                            value={selectedBrand}
+                            onChange={handleBrandChange}
+                        >
+                            <MenuItem value="Daytona">Daytona</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl style={{ background: "#fff" }}>
+                        <InputLabel id="cilinder-label">Cilinder</InputLabel>
+                        <Select
+                            labelId="cilinder-label"
+                            id="cilinder"
+                            value={selectedCilinder}
+                            onChange={handleCilinderChange}
+                        >
+                            <MenuItem value="CC150">CC150</MenuItem>
+                            <MenuItem value="CC170">CC170</MenuItem>
+                            <MenuItem value="CC180">CC180</MenuItem>
+                            <MenuItem value="CC200">CC200</MenuItem>
+                            <MenuItem value="CC250">CC250</MenuItem>
+                            <MenuItem value="CC300">CC300</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} style={styles.rowContainer}>
+                    <Button
+                        variant="contained"
+                        style={{
+                            marginLeft: "10px",
+                            ...styles.button,
+                            background: "#fff",
+                            color: "#000",
+                        }}
+                        onClick={handleSearchClick}
+                    >
+                        Search
+                    </Button>
+                </Grid>
+            </Grid>
             <Grid
                 container
                 item
@@ -91,31 +237,16 @@ export default function CardLayers3d({
                         xs={12}
                         style={{ ...styles.rowContainer, ...styles.cardContainer }}
                     >
-                        {imageUrls
-                            .filter((url) => url.toLowerCase().includes(searchTerm))
-                            .map((url, index) => (
-                                <Grid key={index} item padding="5px">
-                                    <Card style={{ maxWidth: 345 }}>
-                                        <CardContent>
-                                            <h3>{products[index]?.name}</h3>
-                                        </CardContent>
-                                        <CardMedia
-                                            component="img"
-                                            alt={`Image ${index}`}
-                                            height="140"
-                                            image={products[index]?.imageUrls}
-                                            loading="lazy"
-                                        />
-                                        <CardContent>
-                                            <h2>{"$" + products[index]?.precio}</h2>
-                                            <p>{products[index]?.description}</p>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
+
+                        {productos.map((producto) => (
+
+                            <Cards key={producto.id} producto={producto} />
+
+                        ))}
+
                     </Grid>
                 </Box>
             </Grid>
-        </div>
+        </>
     );
 }

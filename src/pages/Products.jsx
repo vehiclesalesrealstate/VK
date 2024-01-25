@@ -64,7 +64,7 @@ const ProductoCard = ({ producto }) => {
     );
 };
 
-const TuComponenteReact = () => {
+const Products = () => {
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -127,4 +127,4 @@ const TuComponenteReact = () => {
     );
 };
 
-export default TuComponenteReact;
+export default Products;
