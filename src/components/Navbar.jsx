@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
     AppBar,
     Toolbar,
@@ -69,9 +69,16 @@ const Navbar = () => {
     ];
 
     const handleAddClick = (eventoProducto) => {
-
-        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        navigate('/buy', { state: { carrito } });
+        // Construir un objeto serializable a partir del evento o producto
+        const producto = {
+            // Suponiendo que `eventoProducto` tiene estas propiedades
+            id: eventoProducto.id,
+            name: eventoProducto.name,
+            precio: eventoProducto.precio,
+            // ... otras propiedades necesarias
+        };
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    navigate('/buy', { state: { carrito } });
     };
 
     const handleLogout = () => {
