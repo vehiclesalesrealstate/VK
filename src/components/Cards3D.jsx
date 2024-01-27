@@ -9,12 +9,14 @@ import {
     InputLabel,
     FormControl,
 } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 import "firebase/storage";
 import CardContent from "@mui/joy/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import IconButton from '@mui/material/IconButton';
 import axios from "axios";
+import { useAuth } from '../routes/AuthContext';
 
 const styles = {
 
@@ -42,13 +44,28 @@ const styles = {
 };
 
 const Cards = ({ producto }) => {
+
+
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const { description, imageUrl, name, precio } = producto;
 
+    const handleAddToCartClick = (producto) => {
+
+        if (isAuthenticated) {
+            navigate('/buy', { state: { carrito: [producto] } });
+
+        } else {
+            navigate('/signup');
+        }
+    };
     return (
         <Grid item padding="5px">
             <Card style={{ maxWidth: 345 }}>
                 <CardContent>
-                    <h3>{name}</h3>
+                    <Typography gutterBottom variant="h5" component="h2">
+                        {name}
+                    </Typography>
                 </CardContent>
                 <CardMedia
                     component="img"
@@ -65,24 +82,33 @@ const Cards = ({ producto }) => {
                     <div
                         style={{
                             display: "flex",
-                            justifyContent: "center",
+                            justifyContent: "space-between",
                             alignContent: "center",
                             alignItems: "center",
+                            padding: "10px",
                         }}
                     >
                         <Typography color="text.secondary">Precio: ${precio}</Typography>
+
+
+                        <IconButton aria-label="carrito de compras" onClick={() => handleAddToCartClick(producto)}>
+                            <ShoppingCartIcon />
+                        </IconButton>
+
                     </div>
                 </CardContent>
             </Card>
         </Grid>
     );
 };
+
 export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
     const [productos, setProductos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedBrand, setSelectedBrand] = React.useState("Daytona");
     const [selectedCilinder, setSelectedCilinder] = React.useState("CC150");
+
 
     const handleBrandChange = async (event) => {
         const brand = event.target.value;

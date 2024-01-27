@@ -8,20 +8,30 @@ import Succursal from './pages/Succursal';
 import './App.css';
 import Footer from './components/Footer';
 import Upload from './Templates/Upload';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import { AuthProvider } from './routes/AuthContext';
+import Buy from './Templates/Buy';
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" exact element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/succursal" element={<Succursal />} />
-        <Route path="/upload" element={<Upload />} />
-      </Routes>
-      <Footer />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" exact element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/succursal" element={<Succursal />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/buy" element={<Buy />} />
+        </Routes>
+        <Footer />
+      </Router>
+    </AuthProvider>
+
   );
 }
 
