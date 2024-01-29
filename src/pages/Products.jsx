@@ -72,12 +72,6 @@ const Products = () => {
     useEffect(() => {
 
         const storedProductos = localStorage.getItem('productos');
-        if (storedProductos) {
-            setProductos(JSON.parse(storedProductos));
-            setLoading(false);
-        } else {
-            fetchProductos();
-        }
 
         const fetchProductos = async () => {
             try {
@@ -111,6 +105,13 @@ const Products = () => {
             }
         };
 
+        if (storedProductos) {
+            setProductos(JSON.parse(storedProductos));
+            setLoading(false);
+        } else {
+            fetchProductos();
+        }
+
         fetchProductos();
     }, []);
 
@@ -127,8 +128,8 @@ const Products = () => {
             <div style={{ padding: "20px" }}>
                 <Grid container spacing={2}>
                     {productos.map((producto, index) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
-                            <ProductoCard key={index} producto={producto} />
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                            <ProductoCard producto={producto} />
                         </Grid>
                     ))}
                 </Grid>
