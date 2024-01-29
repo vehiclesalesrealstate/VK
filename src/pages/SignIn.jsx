@@ -18,29 +18,46 @@ const SignIn = () => {
         setAlertSeverity('info');
 
         const db = getDatabase();
-        const usersRef = ref(db, 'Users/Client');
+        const clientsRef = ref(db, 'Users/Client');
+        const adminsRef = ref(db, 'Users/Admin');
 
-        get(usersRef).then((snapshot) => {
+        get(clientsRef).then((snapshot) => {
             let userFound = false;
             if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                     const user = childSnapshot.val();
                     if (user.email === email && user.password === password) {
                         userFound = true;
-                        login({ email: email });
+                        login({ email: email, role: 'Client' });
                         navigate('/');
                     }
                 });
-                if (!userFound) {
-                    setAlertMessage('Usuario no encontrado o contraseña incorrecta');
+            }
+            if (!userFound) {
+                get(adminsRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        snapshot.forEach((childSnapshot) => {
+                            const user = childSnapshot.val();
+                            if (user.email === email && user.password === password) {
+                                userFound = true;
+                                login({ email: email, role: 'Admin' });
+                                navigate('/');
+                            }
+                        });
+                    }
+                    if (!userFound) {
+                        setAlertMessage('Usuario no encontrado o contraseña incorrecta');
+                        setAlertSeverity('error');
+                    }
+                }).catch((error) => {
+                    setAlertMessage(`Error al obtener usuarios: ${error}`);
                     setAlertSeverity('error');
-                }
+                });
             }
         }).catch((error) => {
             setAlertMessage(`Error al obtener usuarios: ${error}`);
             setAlertSeverity('error');
         });
-
     };
 
     return (

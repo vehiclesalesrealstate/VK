@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Box from "@mui/joy/Box";
 import {
     Card,
@@ -17,6 +17,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import IconButton from '@mui/material/IconButton';
 import axios from "axios";
 import { useAuth } from '../routes/AuthContext';
+import { motion } from 'framer-motion';
 
 const styles = {
 
@@ -41,6 +42,11 @@ const styles = {
         alignContent: "center",
 
     },
+};
+
+const cardVariants = {
+    hidden: { opacity: 0, scale: 0.75 },
+    visible: { opacity: 1, scale: 1 },
 };
 
 const Cards = ({ producto }) => {
@@ -104,7 +110,7 @@ const Cards = ({ producto }) => {
 
 export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
     const [productos, setProductos] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedBrand, setSelectedBrand] = React.useState("Daytona");
     const [selectedCilinder, setSelectedCilinder] = React.useState("CC150");
@@ -113,6 +119,8 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
     const handleBrandChange = async (event) => {
         const brand = event.target.value;
         setSelectedBrand(brand);
+        if (!brand) return;
+        setLoading(true);
         try {
             const response = await axios.get(
                 `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/${brand}.json`
@@ -144,6 +152,10 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
     const handleCilinderChange = async (event) => {
         const cilinder = event.target.value;
         setSelectedCilinder(cilinder);
+        if (!selectedBrand || !cilinder) return;
+        setLoading(true);
+
+
         const url = `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/${selectedBrand}/${cilinder}.json`;
 
         try {
@@ -161,37 +173,6 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
         }
     };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/Daytona.json`
-                );
-                const data = response.data;
-                const carpetas = Object.keys(data);
-                const fetchPromises = carpetas.map(async (carpeta) => {
-                    const response = await axios.get(
-                        `https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/Daytona/${carpeta}.json`
-                    );
-                    const productosData = response.data;
-                    const productosArray = Object.values(productosData);
-                    const productosConFolder = productosArray.map((producto) => ({
-                        ...producto,
-                        folder: carpeta,
-                    }));
-                    return productosConFolder;
-                });
-                const productosData = await Promise.all(fetchPromises);
-                const allProductos = productosData.flat();
-                setProductos(allProductos);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [propImageUrls, searchTerm]);
     if (loading) {
         return <p>Cargando datos...</p>;
     }
@@ -217,6 +198,7 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
                             onChange={handleBrandChange}
                         >
                             <MenuItem value="Daytona">Daytona</MenuItem>
+                            <MenuItem value="IGM">IGM</MenuItem>
                         </Select>
                     </FormControl>
                     <FormControl style={{ background: "#fff" }}>
@@ -248,16 +230,18 @@ export default function CardLayers3d({ searchTerm, imageUrls: propImageUrls }) {
                 }}
             >
                 <Box style={{ ...styles.rowContainer, height: "auto" }}>
-                    <Grid
-                        container
-                        item
-                        xs={12}
-                        style={{ ...styles.rowContainer, ...styles.cardContainer }}
-                    >
-                        {productos.map((producto) => (
-                            <Cards key={producto.id} producto={producto} />
-                        ))}
-                    </Grid>
+                    {productos.length > 0 && (
+                        <Grid
+                            container
+                            item
+                            xs={12}
+                            style={{ ...styles.rowContainer, ...styles.cardContainer }}
+                        >
+                            {productos.map((producto) => (
+                                <Cards key={producto.id} producto={producto} />
+                            ))}
+                        </Grid>
+                    )}
                 </Box>
             </Grid>
         </>

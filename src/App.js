@@ -12,6 +12,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import { AuthProvider } from './routes/AuthContext';
 import Buy from './Templates/Buy';
+import SignUpAdmin from './pages/SignUpAdmin';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/buy" element={<Buy />} />
+          <Route path='/SignUpAdmin' element={<SignUpAdmin />} />
         </Routes>
         <Footer />
       </Router>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   Grid,
   Paper,
@@ -9,7 +8,6 @@ import "firebase/storage";
 import img_1 from '../img/img_1.jpg'
 import img_2 from '../img/img_2.jpg'
 import img_3 from '../img/img_3.jpg'
-
 
 const Home = ({ producto }) => {
   const [currentImage, setCurrentImage] = useState(1);

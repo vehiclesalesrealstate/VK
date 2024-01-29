@@ -12,7 +12,7 @@ import {
 import { useAuth } from '../routes/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const SignUp = () => {
+const SignUpAdmin = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ const SignUp = () => {
         const uuid = uuidv4();
 
         const db = getDatabase();
-        const userRef = ref(db, 'Users/Client/' + uuid);
+        const userRef = ref(db, 'Users/Admin/' + uuid);
 
         setOpenSnackbar(true);
         
@@ -61,7 +61,7 @@ const SignUp = () => {
                 }}
             >
                 <Typography component="h1" variant="h5">
-                    Sign Up
+                    Sign Up Admin
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
@@ -112,4 +112,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default SignUpAdmin;

@@ -102,6 +102,11 @@ const Buy = () => {
                                     Total a Pagar: ${calcularTotal()}
                                 </Typography>
                             </CardContent>
+                            <CardContent>
+                                <Button>
+                                    Pagar
+                                </Button>
+                            </CardContent>
                         </Card>
                     </Grid>
                 ))}

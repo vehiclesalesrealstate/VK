@@ -70,13 +70,22 @@ const Products = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+
+        const storedProductos = localStorage.getItem('productos');
+        if (storedProductos) {
+            setProductos(JSON.parse(storedProductos));
+            setLoading(false);
+        } else {
+            fetchProductos();
+        }
+
         const fetchProductos = async () => {
             try {
                 const response = await axios.get(
                     "https://akvehicle45-default-rtdb.firebaseio.com/Users/Products/imges/motos_img/Daytona.json"
                 );
                 const data = response.data;
-                 
+
                 const carpetas = Object.keys(data);
                 const fetchPromises = carpetas.map(async (carpeta) => {
                     const response = await axios.get(
@@ -93,6 +102,7 @@ const Products = () => {
                 });
                 const productosData = await Promise.all(fetchPromises);
                 const allProductos = productosData.flat();
+                localStorage.setItem('productos', JSON.stringify(allProductos));
                 setProductos(allProductos);
             } catch (error) {
                 setError(error);

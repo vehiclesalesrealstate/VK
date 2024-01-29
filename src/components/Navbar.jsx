@@ -26,6 +26,7 @@ import { Box } from "@react-three/drei";
 import Tooltip from "@mui/material/Tooltip";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from "react-router-dom";
+import { Upload, VerifiedUserOutlined } from "@mui/icons-material";
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -44,6 +45,10 @@ const Navbar = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const { isAuthenticated, logout, currentUser } = useAuth();
+
+    const isAdmin = () => {
+        return isAuthenticated && currentUser?.role === 'Admin';
+    };
 
     const toggleDrawer = (open) => (event) => {
         if (
@@ -77,8 +82,8 @@ const Navbar = () => {
             precio: eventoProducto.precio,
             // ... otras propiedades necesarias
         };
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    navigate('/buy', { state: { carrito } });
+        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        navigate('/buy', { state: { carrito } });
     };
 
     const handleLogout = () => {
@@ -235,6 +240,25 @@ const Navbar = () => {
                                             {currentUser?.email}
                                         </Typography>
                                     </MenuItem>
+                                    {isAdmin() && (
+                                        <>
+                                            <MenuItem style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                                                <ListItemIcon style={{ display: 'flex', justifyContent: 'center' }}>
+                                                    <Link to="/upload" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <Upload fontSize="small" />
+                                                        Upload
+                                                    </Link>
+                                                </ListItemIcon>
+                                            </MenuItem><MenuItem style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                                                <ListItemIcon style={{ display: 'flex', justifyContent: 'center' }}>
+                                                    <Link to="/SignUpAdmin" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <VerifiedUserOutlined fontSize="small" />
+                                                        Sign Up Admin
+                                                    </Link>
+                                                </ListItemIcon>
+                                            </MenuItem>
+                                        </>
+                                    )}
                                     <MenuItem onClick={handleAddClick} style={{ justifyContent: 'center', textAlign: 'center' }}>
                                         <Typography variant="subtitle1" component="span" sx={{ marginX: 2 }} style={{
                                             justifyContent: 'center', textAlign: 'center',
