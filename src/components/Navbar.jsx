@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
     AppBar,
     Toolbar,
@@ -12,6 +12,7 @@ import {
     IconButton,
     useMediaQuery,
     useTheme,
+    Box
 } from "@mui/material";
 import Settings from '@mui/icons-material/Settings';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -22,7 +23,7 @@ import HomeImage from "../img/home.jpeg";
 import { useAuth } from "../routes/AuthContext";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Box } from "@react-three/drei";
+
 import Tooltip from "@mui/material/Tooltip";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from "react-router-dom";
@@ -168,7 +169,7 @@ const Navbar = () => {
                                 sx={{
                                     display: "flex",
                                     alignItems: "center",
-                                    fontWeight: "600",
+
                                     textAlign: "center",
                                 }}
                                 style={{ fontWeight: "600" }}

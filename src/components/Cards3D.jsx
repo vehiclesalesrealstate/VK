@@ -17,7 +17,6 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import IconButton from '@mui/material/IconButton';
 import axios from "axios";
 import { useAuth } from '../routes/AuthContext';
-import { motion } from 'framer-motion';
 
 const styles = {
 
@@ -44,10 +43,6 @@ const styles = {
     },
 };
 
-const cardVariants = {
-    hidden: { opacity: 0, scale: 0.75 },
-    visible: { opacity: 1, scale: 1 },
-};
 
 const Cards = ({ producto }) => {
 
