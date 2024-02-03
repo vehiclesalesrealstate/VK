@@ -270,18 +270,22 @@ const Navbar = () => {
                                             </MenuItem>
                                         </>
                                     )}
-                                    <MenuItem onClick={() => navigate('/buy')} style={{ justifyContent: 'center', textAlign: 'center' }}>
-                                        <Typography variant="subtitle1" component="span" sx={{ marginX: 2 }} style={{
-                                            justifyContent: 'center', textAlign: 'center',
-                                            alignContent: 'center', alignItems: 'center'
-                                        }}>
-                                            <IconButton aria-label="carrito de compras">
-                                                <ShoppingCartIcon />
-                                            </IconButton>
-                                        </Typography>
-                                        Compras
+                                    {!isAdmin() && (
 
-                                    </MenuItem>
+
+                                        <MenuItem onClick={() => navigate('/buy')} style={{ justifyContent: 'center', textAlign: 'center' }}>
+                                            <Typography variant="subtitle1" component="span" sx={{ marginX: 2 }} style={{
+                                                justifyContent: 'center', textAlign: 'center',
+                                                alignContent: 'center', alignItems: 'center'
+                                            }}>
+                                                <IconButton aria-label="carrito de compras">
+                                                    <ShoppingCartIcon />
+                                                </IconButton>
+                                            </Typography>
+                                            Compras
+
+                                        </MenuItem>
+                                    )}
                                     <MenuItem onClick={handleClose} style={{ justifyContent: 'center', textAlign: 'center' }}>
                                         <ListItemIcon>
                                             <Settings fontSize="small" />

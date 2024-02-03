@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Box from "@mui/joy/Box";
+
 import {
     Card,
     Grid,
@@ -7,7 +7,8 @@ import {
     MenuItem,
     Typography,
     InputLabel,
-    FormControl,
+    FormControl, TextField, Button,
+    Modal, Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "firebase/storage";
@@ -17,9 +18,10 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import IconButton from '@mui/material/IconButton';
 import axios from "axios";
 import { useAuth } from '../routes/AuthContext';
+import EditIcon from '@mui/icons-material/Edit';
+import firebase from "../firebase/datafirebase";
 
 const styles = {
-
     container: {
         padding: "10px",
         display: "grid",
@@ -43,13 +45,34 @@ const styles = {
     },
 };
 
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 const Cards = ({ producto }) => {
-
-
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editableProducto, setEditableProducto] = useState({
+        name: '',
+        precio: '',
+        description: '',
+    });
+    const { isAuthenticated, currentUser } = useAuth();
     const { description, imageUrl, name, precio } = producto;
+    const isAdmin = currentUser?.role === 'Admin';
+
+    const handleEditClick = (producto) => {
+        setEditableProducto(producto);
+        setEditModalOpen(true);
+    };
 
     const handleAddToCartClick = (producto) => {
 
@@ -60,6 +83,22 @@ const Cards = ({ producto }) => {
             navigate('/signup');
         }
     };
+
+    const handleSaveChanges = () => {
+        // Lógica para actualizar el producto en Firebase
+        const productoRef = firebase.database().ref('Productos').child(editableProducto.id);
+        productoRef.update({
+            name: editableProducto.name,
+            precio: editableProducto.precio,
+            description: editableProducto.description,
+        }).then(() => {
+            console.log("Producto actualizado con éxito");
+            setEditModalOpen(false); // Cerrar el modal después de actualizar
+        }).catch((error) => {
+            console.error("Error al actualizar producto:", error);
+        });
+    };
+
     return (
         <Grid item padding="5px">
             <Card style={{ maxWidth: 345 }}>
@@ -90,13 +129,63 @@ const Cards = ({ producto }) => {
                         }}
                     >
                         <Typography color="text.secondary">Precio: ${precio}</Typography>
-
-
-                        <IconButton aria-label="carrito de compras" onClick={() => handleAddToCartClick(producto)}>
-                            <ShoppingCartIcon />
-                        </IconButton>
+                        {isAdmin ? (
+                            <>
+                                <IconButton aria-label="editar producto" onClick={() => handleEditClick(producto)}>
+                                    <EditIcon />
+                                </IconButton>
+                                {editModalOpen && editableProducto && (
+                                    <Modal
+                                        open={editModalOpen}
+                                        onClose={() => setEditModalOpen(false)}
+                                        aria-labelledby="modal-modal-title"
+                                        aria-describedby="modal-modal-description"
+                                    >
+                                        <Box sx={modalStyle}>
+                                            <Typography id="modal-modal-title" variant="h6" component="div">
+                                                Editar Producto
+                                            </Typography>
+                                            <TextField
+                                                margin="normal"
+                                                fullWidth
+                                                label="Name"
+                                                value={editableProducto.name}
+                                                onChange={(e) => setEditableProducto({ ...editableProducto, name: e.target.value })}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                fullWidth
+                                                label="Precio"
+                                                value={editableProducto.precio}
+                                                onChange={(e) => setEditableProducto({ ...editableProducto, precio: e.target.value })}
+                                            />
+                                            <TextField
+                                                margin="normal"
+                                                fullWidth
+                                                label="Descripción"
+                                                value={editableProducto.description}
+                                                onChange={(e) => setEditableProducto({ ...editableProducto, description: e.target.value })}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                onClick={handleSaveChanges}
+                                            >
+                                                Guardar Cambios
+                                            </Button>
+                                        </Box>
+                                    </Modal>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <IconButton aria-label="carrito de compras" onClick={() => handleAddToCartClick(producto)}>
+                                    <ShoppingCartIcon />
+                                </IconButton>
+                            </>
+                        )}
 
                     </div>
+
                 </CardContent>
             </Card>
         </Grid>
