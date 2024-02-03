@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { getDatabase, ref, set} from 'firebase/database';
+import { getDatabase, ref, set } from 'firebase/database';
 import {
     Button,
     TextField,
@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 
 const SignUpAdmin = () => {
     const navigate = useNavigate();
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -29,10 +30,11 @@ const SignUpAdmin = () => {
         const userRef = ref(db, 'Users/Admin/' + uuid);
 
         setOpenSnackbar(true);
-        
+
         setErrorMessage("");
 
         set(userRef, {
+            name: name,
             email: email,
             password: password
         }).then(() => {
@@ -64,6 +66,19 @@ const SignUpAdmin = () => {
                     Sign Up Admin
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="name"
+                        label="Your name"
+                        name="name"
+                        autoComplete="name"
+                        autoFocus
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
                     <TextField
                         variant="outlined"
                         margin="normal"

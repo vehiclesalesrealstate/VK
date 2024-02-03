@@ -26,6 +26,7 @@ import MuiAlert from "@mui/material/Alert";
 import { storage } from '../firebase/datafirebase';
 
 const Upload = () => {
+    const [selectedBrand, setSelectedBrand] = useState("Daytona");
     const [selectedFolder, setSelectedFolder] = useState("CC150");
     const [image, setImage] = useState([]);
     const [progress, setProgress] = useState(0);
@@ -55,7 +56,7 @@ const Upload = () => {
                 const folderName = uuidv4();
                 const storageRef = ref(
                     storage,
-                    `images_base/motos_img/Daytona/${selectedFolder}/${image.name}`
+                    `images_base/motos_img/${selectedBrand}/${selectedFolder}/${image.name}`
                 );
                 const uploadTask = uploadBytesResumable(storageRef, image);
                 uploadTasks.push(uploadTask);
@@ -75,7 +76,7 @@ const Upload = () => {
 
                         const productRef = dbRef(
                             database,
-                            `Users/Products/imges/motos_img/Daytona/${selectedFolder}/${folderName}`
+                            `Users/Products/imges/motos_img/${selectedBrand}/${selectedFolder}/${folderName}`
                         );
                         //const newImageRef = push(productRef);
 
@@ -116,6 +117,21 @@ const Upload = () => {
                 <Typography variant="h4" gutterBottom style={{ fontWeight: "700" }}>
                     Subir Imágenes
                 </Typography>
+                <FormControl fullWidth sx={{ marginBottom: 2 }} style={{ background: "#fff" }}>
+                    <InputLabel id="select-brand-label">Seleccione Marca</InputLabel>
+                    <Select
+                        labelId="select-brand-label"
+                        id="select-brand"
+                        label="Seleccione Marca"
+                        value={selectedBrand}
+                        onChange={(e) => setSelectedBrand(e.target.value)}
+                    >
+                        <MenuItem value="Daytona">Daytona</MenuItem>
+                        <MenuItem value="IGM">IGM</MenuItem>
+                        <MenuItem value="Marca3">Marca 3</MenuItem>
+
+                    </Select>
+                </FormControl>
                 <FormControl
                     fullWidth
                     sx={{ marginBottom: 2 }}

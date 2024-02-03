@@ -49,7 +49,9 @@ const Navbar = () => {
 
     const isAdmin = () => {
         return isAuthenticated && currentUser?.role === 'Admin';
+
     };
+    console.log(currentUser);
 
     const toggleDrawer = (open) => (event) => {
         if (
@@ -75,16 +77,24 @@ const Navbar = () => {
     ];
 
     const handleAddClick = (eventoProducto) => {
-        // Construir un objeto serializable a partir del evento o producto
+
         const producto = {
-            // Suponiendo que `eventoProducto` tiene estas propiedades
             id: eventoProducto.id,
             name: eventoProducto.name,
             precio: eventoProducto.precio,
-            // ... otras propiedades necesarias
+            imageUrl: eventoProducto.imageUrl,
+
         };
         const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        navigate('/buy', { state: { carrito } });
+        const index = carrito.findIndex((item) => item.id === producto.id);
+
+        if (index === -1) {
+            carrito.push(producto);
+        }
+
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+
+        navigate('/buy');
     };
 
     const handleLogout = () => {
@@ -236,7 +246,7 @@ const Navbar = () => {
                                     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                                 >
-                                    <MenuItem onClick={handleClose}>
+                                    <MenuItem >
                                         <Typography variant="subtitle1" component="span" sx={{ marginX: 2 }}>
                                             {currentUser?.email}
                                         </Typography>
@@ -260,7 +270,7 @@ const Navbar = () => {
                                             </MenuItem>
                                         </>
                                     )}
-                                    <MenuItem onClick={handleAddClick} style={{ justifyContent: 'center', textAlign: 'center' }}>
+                                    <MenuItem onClick={() => navigate('/buy')} style={{ justifyContent: 'center', textAlign: 'center' }}>
                                         <Typography variant="subtitle1" component="span" sx={{ marginX: 2 }} style={{
                                             justifyContent: 'center', textAlign: 'center',
                                             alignContent: 'center', alignItems: 'center'

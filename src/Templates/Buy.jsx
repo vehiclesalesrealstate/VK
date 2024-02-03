@@ -1,15 +1,27 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Grid, Card, CardMedia, CardContent, Typography, IconButton, Modal, Box, Button } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const Buy = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const carrito = location.state?.carrito;
     const [openModal, setOpenModal] = useState(false);
-    const [indexToDelete, setIndexToDelete] = useState(null);
-    const [carritoLocal, setCarritoLocal] = useState(carrito);
+    const [productoAEliminar, setProductoAEliminar] = useState(null);
+    const [carritoLocal, setCarritoLocal] = useState(() => {
+        const carritoData = JSON.parse(localStorage.getItem('carrito')) || [];
+        const productoPasado = location.state?.carrito?.[0];
+
+        if (productoPasado) {
+            const yaEnCarrito = carritoData.some(producto => producto.id === productoPasado.id);
+            if (!yaEnCarrito) {
+                carritoData.push(productoPasado);
+                localStorage.setItem('carrito', JSON.stringify(carritoData)); // Actualiza localStorage con el nuevo carrito
+            }
+        }
+
+        return carritoData;
+    });
 
     const calcularTotal = () => {
         if (!carritoLocal || !Array.isArray(carritoLocal)) {
@@ -22,18 +34,19 @@ const Buy = () => {
     };
     const handleCloseModal = () => {
         setOpenModal(false);
-        setIndexToDelete(null);
+        setProductoAEliminar(null);
     };
-    const handleDelete = (indexToDelete) => {
-        if (indexToDelete !== null) {
-            const newCarrito = carrito.filter((_, index) => index !== indexToDelete);
-            navigate('/', { state: { carrito: newCarrito } });
-            setCarritoLocal(newCarrito);
-            handleCloseModal();
-        }
+
+    const handleDelete = () => {
+        const carritoActualizado = carritoLocal.filter(producto => producto.id !== productoAEliminar);
+        localStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+        setCarritoLocal(carritoActualizado);
+        handleCloseModal();
     };
-    const handleOpenModal = (index) => {
-        setIndexToDelete(index);
+
+
+    const handleOpenModal = (productoId) => {
+        setProductoAEliminar(productoId);
         setOpenModal(true);
     };
 
@@ -50,8 +63,8 @@ const Buy = () => {
 
     return (
         <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
-            {Array.isArray(carritoLocal) && carritoLocal.map((producto, index) => (
-                <Card key={index} style={{ maxWidth: 345, margin: "10px" }}>
+            {carritoLocal.map((producto, index) => (
+                <Card key={producto.id || index} style={{ maxWidth: 345, margin: "10px" }}>
                     <CardMedia
                         component="img"
                         alt={producto.name}
@@ -67,7 +80,7 @@ const Buy = () => {
                             {producto.description}
                         </Typography>
 
-                        <IconButton aria-label="delete" onClick={() => handleOpenModal(index)}>
+                        <IconButton aria-label="delete" onClick={() => handleOpenModal(producto.id)}>
                             <DeleteIcon />
                         </IconButton>
                     </CardContent>
@@ -91,25 +104,21 @@ const Buy = () => {
                 </Box>
             </Modal>
             <div>
-                {Array.isArray(carrito) && carrito.map((producto, index) => (
-                    <Grid justifyContent="center" alignItems="center">
-                        <Card>
-                            <CardContent>
-                                <Typography variant="body1" color="text.secondary">
-                                    Precio: ${producto.precio}
-                                </Typography>
-                                <Typography variant="h6" style={{ marginTop: "20px" }}>
-                                    Total a Pagar: ${calcularTotal()}
-                                </Typography>
-                            </CardContent>
-                            <CardContent>
-                                <Button>
-                                    Pagar
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
+
+                <Grid justifyContent="center" alignItems="center">
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" style={{ marginTop: "20px" }}>
+                                Total a Pagar: ${calcularTotal()}
+                            </Typography>
+                        </CardContent>
+                        <CardContent>
+                            <Button onClick={() => navigate('/checkout')}>
+                                Pagar
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </Grid>
             </div>
         </Grid>
     );
